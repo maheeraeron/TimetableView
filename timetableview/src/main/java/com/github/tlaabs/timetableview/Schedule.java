@@ -3,13 +3,14 @@ package com.github.tlaabs.timetableview;
 import java.io.Serializable;
 
 public class Schedule implements Serializable {
-    static final int MON = 0;
-    static final int TUE = 1;
-    static final int WED = 2;
-    static final int THU = 3;
-    static final int FRI = 4;
-    static final int SAT = 5;
-    static final int SUN = 6;
+    public static final int SUN = 0;
+    public static final int MON = 1;
+    public static final int TUE = 2;
+    public static final int WED = 3;
+    public static final int THU = 4;
+    public static final int FRI = 5;
+    public static final int SAT = 6;
+
 
     String classTitle="";
     String classPlace="";
@@ -74,5 +75,5 @@ public class Schedule implements Serializable {
 
     public int getUid() { return uid; }
 
-    public void setUid(int uid) { this.uid = uid }
+    public void setUid(int uid) { this.uid = uid; }
 }
