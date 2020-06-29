@@ -17,6 +17,7 @@ public class Schedule implements Serializable {
     private int day = 0;
     private Time startTime;
     private Time endTime;
+    private int uid = -1;
 
     public Schedule() {
         this.startTime = new Time();
@@ -70,4 +71,8 @@ public class Schedule implements Serializable {
     public void setEndTime(Time endTime) {
         this.endTime = endTime;
     }
+
+    public int getUid() { return uid; }
+
+    public void setUid(int uid) { this.uid = uid }
 }
