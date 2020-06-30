@@ -13,7 +13,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.github.tlaabs.timetableview.Schedule;
+import com.github.tlaabs.timetableview.TimeTableCourse;
 import com.github.tlaabs.timetableview.Time;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
     //request mode
     private int mode;
 
-    private Schedule schedule;
+    private TimeTableCourse timeTableCourse;
     private int editIdx;
 
     @Override
@@ -59,9 +59,9 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
         endTv = findViewById(R.id.end_time);
 
         //set the default time
-        schedule = new Schedule();
-        schedule.setStartTime(new Time(10,0));
-        schedule.setEndTime(new Time(13,30));
+        timeTableCourse = new TimeTableCourse();
+        timeTableCourse.setStartTime(new Time(10,0));
+        timeTableCourse.setEndTime(new Time(13,30));
 
         checkMode();
         initView();
@@ -84,7 +84,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
         daySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                schedule.setDay(position);
+                timeTableCourse.setDay(position);
             }
 
             @Override
@@ -95,7 +95,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
         startTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TimePickerDialog dialog = new TimePickerDialog(context,listener,schedule.getStartTime().getHour(), schedule.getStartTime().getMinute(), false);
+                TimePickerDialog dialog = new TimePickerDialog(context,listener, timeTableCourse.getStartTime().getHour(), timeTableCourse.getStartTime().getMinute(), false);
                 dialog.show();
             }
 
@@ -103,15 +103,15 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                     startTv.setText(hourOfDay + ":" + minute);
-                    schedule.getStartTime().setHour(hourOfDay);
-                    schedule.getStartTime().setMinute(minute);
+                    timeTableCourse.getStartTime().setHour(hourOfDay);
+                    timeTableCourse.getStartTime().setMinute(minute);
                 }
             };
         });
         endTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TimePickerDialog dialog = new TimePickerDialog(context,listener,schedule.getEndTime().getHour(), schedule.getEndTime().getMinute(), false);
+                TimePickerDialog dialog = new TimePickerDialog(context,listener, timeTableCourse.getEndTime().getHour(), timeTableCourse.getEndTime().getMinute(), false);
                 dialog.show();
             }
 
@@ -119,8 +119,8 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                     endTv.setText(hourOfDay + ":" + minute);
-                    schedule.getEndTime().setHour(hourOfDay);
-                    schedule.getEndTime().setMinute(minute);
+                    timeTableCourse.getEndTime().setHour(hourOfDay);
+                    timeTableCourse.getEndTime().setMinute(minute);
                 }
             };
         });
@@ -133,20 +133,20 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
                 if(mode == MainActivity.REQUEST_ADD){
                     inputDataProcessing();
                     Intent i = new Intent();
-                    ArrayList<Schedule> schedules = new ArrayList<Schedule>();
+                    ArrayList<TimeTableCourse> timeTableCourses = new ArrayList<TimeTableCourse>();
                     //you can add more schedules to ArrayList
-                    schedules.add(schedule);
-                    i.putExtra("schedules",schedules);
+                    timeTableCourses.add(timeTableCourse);
+                    i.putExtra("schedules", timeTableCourses);
                     setResult(RESULT_OK_ADD,i);
                     finish();
                 }
                 else if(mode == MainActivity.REQUEST_EDIT){
                     inputDataProcessing();
                     Intent i = new Intent();
-                    ArrayList<Schedule> schedules = new ArrayList<Schedule>();
-                    schedules.add(schedule);
+                    ArrayList<TimeTableCourse> timeTableCourses = new ArrayList<TimeTableCourse>();
+                    timeTableCourses.add(timeTableCourse);
                     i.putExtra("idx",editIdx);
-                    i.putExtra("schedules",schedules);
+                    i.putExtra("schedules", timeTableCourses);
                     setResult(RESULT_OK_EDIT,i);
                     finish();
                 }
@@ -163,17 +163,17 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
     private void loadScheduleData(){
         Intent i = getIntent();
         editIdx = i.getIntExtra("idx",-1);
-        ArrayList<Schedule> schedules = (ArrayList<Schedule>)i.getSerializableExtra("schedules");
-        schedule = schedules.get(0);
-        subjectEdit.setText(schedule.getClassTitle());
-        classroomEdit.setText(schedule.getClassPlace());
-        professorEdit.setText(schedule.getProfessorName());
-        daySpinner.setSelection(schedule.getDay());
+        ArrayList<TimeTableCourse> timeTableCourses = (ArrayList<TimeTableCourse>)i.getSerializableExtra("schedules");
+        timeTableCourse = timeTableCourses.get(0);
+        subjectEdit.setText(timeTableCourse.getName());
+        classroomEdit.setText(timeTableCourse.getLocation());
+        professorEdit.setText(timeTableCourse.getInstructor());
+        daySpinner.setSelection(timeTableCourse.getDay());
     }
 
     private void inputDataProcessing(){
-        schedule.setClassTitle(subjectEdit.getText().toString());
-        schedule.setClassPlace(classroomEdit.getText().toString());
-        schedule.setProfessorName(professorEdit.getText().toString());
+        timeTableCourse.setName(subjectEdit.getText().toString());
+        timeTableCourse.setLocation(classroomEdit.getText().toString());
+        timeTableCourse.setInstructor(professorEdit.getText().toString());
     }
 }

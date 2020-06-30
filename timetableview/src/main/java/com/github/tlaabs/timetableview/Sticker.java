@@ -7,26 +7,26 @@ import java.util.ArrayList;
 
 public class Sticker implements Serializable {
     private ArrayList<TextView> view;
-    private ArrayList<Schedule> schedules;
+    private ArrayList<TimeTableCourse> timeTableCourses;
 
     public Sticker() {
         this.view = new ArrayList<TextView>();
-        this.schedules = new ArrayList<Schedule>();
+        this.timeTableCourses = new ArrayList<TimeTableCourse>();
     }
 
     public void addTextView(TextView v){
         view.add(v);
     }
 
-    public void addSchedule(Schedule schedule){
-        schedules.add(schedule);
+    public void addSchedule(TimeTableCourse timeTableCourse){
+        timeTableCourses.add(timeTableCourse);
     }
 
     public ArrayList<TextView> getView() {
         return view;
     }
 
-    public ArrayList<Schedule> getSchedules() {
-        return schedules;
+    public ArrayList<TimeTableCourse> getTimeTableCourses() {
+        return timeTableCourses;
     }
 }

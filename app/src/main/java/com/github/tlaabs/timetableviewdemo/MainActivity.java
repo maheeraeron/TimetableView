@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.github.tlaabs.timetableview.Schedule;
+import com.github.tlaabs.timetableview.TimeTableCourse;
 import com.github.tlaabs.timetableview.TimetableView;
 
 import java.util.ArrayList;
@@ -55,11 +55,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         timetable.setOnStickerSelectEventListener(new TimetableView.OnStickerSelectedListener() {
             @Override
-            public void OnStickerSelected(int idx, ArrayList<Schedule> schedules) {
+            public void OnStickerSelected(int idx, ArrayList<TimeTableCourse> timeTableCourses) {
                 Intent i = new Intent(context, EditActivity.class);
                 i.putExtra("mode",REQUEST_EDIT);
                 i.putExtra("idx", idx);
-                i.putExtra("schedules", schedules);
+                i.putExtra("schedules", timeTableCourses);
                 startActivityForResult(i,REQUEST_EDIT);
             }
         });
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (requestCode){
             case REQUEST_ADD:
                 if(resultCode == EditActivity.RESULT_OK_ADD){
-                    ArrayList<Schedule> item = (ArrayList<Schedule>)data.getSerializableExtra("schedules");
+                    ArrayList<TimeTableCourse> item = (ArrayList<TimeTableCourse>)data.getSerializableExtra("schedules");
                     timetable.add(item);
                 }
                 break;
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 /** Edit -> Submit */
                 if(resultCode == EditActivity.RESULT_OK_EDIT){
                     int idx = data.getIntExtra("idx",-1);
-                    ArrayList<Schedule> item = (ArrayList<Schedule>)data.getSerializableExtra("schedules");
+                    ArrayList<TimeTableCourse> item = (ArrayList<TimeTableCourse>)data.getSerializableExtra("schedules");
                     timetable.edit(idx,item);
                 }
                 /** Edit -> Delete */

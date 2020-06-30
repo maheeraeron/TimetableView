@@ -8,9 +8,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.support.v7.content.res.AppCompatResources;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
@@ -92,9 +90,9 @@ public class TimetableView extends LinearLayout {
         stickerColors = a.getResources().getStringArray(colorsId);
         startTime = a.getInt(R.styleable.TimetableView_start_time, DEFAULT_START_TIME);
         headerHighlightColor = a.getColor(R.styleable.TimetableView_header_highlight_color, getResources().getColor(R.color.default_header_highlight_color));
-        int highlightTypeValue = a.getInteger(R.styleable.TimetableView_header_highlight_type,0);
-        if(highlightTypeValue == 0) highlightMode = HighlightMode.COLOR;
-        else if(highlightTypeValue == 1) highlightMode = HighlightMode.IMAGE;
+        int highlightTypeValue = a.getInteger(R.styleable.TimetableView_header_highlight_type, 0);
+        if (highlightTypeValue == 0) highlightMode = HighlightMode.COLOR;
+        else if (highlightTypeValue == 1) highlightMode = HighlightMode.IMAGE;
         headerHighlightImageSize = a.getDimensionPixelSize(R.styleable.TimetableView_header_highlight_image_size, dp2Px(24));
         headerHighlightImage = a.getDrawable(R.styleable.TimetableView_header_highlight_image);
         a.recycle();
@@ -120,45 +118,45 @@ public class TimetableView extends LinearLayout {
      * date : 2019-02-08
      * get all schedules TimetableView has.
      */
-    public ArrayList<Schedule> getAllSchedulesInStickers() {
-        ArrayList<Schedule> allSchedules = new ArrayList<Schedule>();
+    public ArrayList<TimeTableCourse> getAllSchedulesInStickers() {
+        ArrayList<TimeTableCourse> allTimeTableCourses = new ArrayList<TimeTableCourse>();
         for (int key : stickers.keySet()) {
-            for (Schedule schedule : stickers.get(key).getSchedules()) {
-                allSchedules.add(schedule);
+            for (TimeTableCourse timeTableCourse : stickers.get(key).getTimeTableCourses()) {
+                allTimeTableCourses.add(timeTableCourse);
             }
         }
-        return allSchedules;
+        return allTimeTableCourses;
     }
 
     /**
      * date : 2019-02-08
      * Used in Edit mode, To check a invalidate schedule.
      */
-    public ArrayList<Schedule> getAllSchedulesInStickersExceptIdx(int idx) {
-        ArrayList<Schedule> allSchedules = new ArrayList<Schedule>();
+    public ArrayList<TimeTableCourse> getAllSchedulesInStickersExceptIdx(int idx) {
+        ArrayList<TimeTableCourse> allTimeTableCourses = new ArrayList<TimeTableCourse>();
         for (int key : stickers.keySet()) {
             if (idx == key) continue;
-            for (Schedule schedule : stickers.get(key).getSchedules()) {
-                allSchedules.add(schedule);
+            for (TimeTableCourse timeTableCourse : stickers.get(key).getTimeTableCourses()) {
+                allTimeTableCourses.add(timeTableCourse);
             }
         }
-        return allSchedules;
+        return allTimeTableCourses;
     }
 
-    public void add(ArrayList<Schedule> schedules) {
-        add(schedules, -1);
+    public void add(ArrayList<TimeTableCourse> timeTableCourses) {
+        add(timeTableCourses, -1);
     }
 
-    private void add(final ArrayList<Schedule> schedules, int specIdx) {
+    private void add(final ArrayList<TimeTableCourse> timeTableCourses, int specIdx) {
         final int count = specIdx < 0 ? ++stickerCount : specIdx;
         Sticker sticker = new Sticker();
-        for (Schedule schedule : schedules) {
+        for (TimeTableCourse timeTableCourse : timeTableCourses) {
             TextView tv = new TextView(context);
 
-            RelativeLayout.LayoutParams param = createStickerParam(schedule);
+            RelativeLayout.LayoutParams param = createStickerParam(timeTableCourse);
             tv.setLayoutParams(param);
             tv.setPadding(10, 0, 10, 0);
-            tv.setText(schedule.getClassTitle() + "\n" + schedule.getClassPlace());
+            tv.setText(timeTableCourse.getName() + "\n" + timeTableCourse.getLocation());
             tv.setTextColor(Color.parseColor("#FFFFFF"));
             tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_STICKER_FONT_SIZE_DP);
             tv.setTypeface(null, Typeface.BOLD);
@@ -166,13 +164,13 @@ public class TimetableView extends LinearLayout {
             tv.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(stickerSelectedListener != null)
-                        stickerSelectedListener.OnStickerSelected(count, schedules);
+                    if (stickerSelectedListener != null)
+                        stickerSelectedListener.OnStickerSelected(count, timeTableCourses);
                 }
             });
 
             sticker.addTextView(tv);
-            sticker.addSchedule(schedule);
+            sticker.addSchedule(timeTableCourse);
             stickers.put(count, sticker);
             stickerBox.addView(tv);
         }
@@ -188,8 +186,8 @@ public class TimetableView extends LinearLayout {
         stickers = SaveManager.loadSticker(data);
         int maxKey = 0;
         for (int key : stickers.keySet()) {
-            ArrayList<Schedule> schedules = stickers.get(key).getSchedules();
-            add(schedules, key);
+            ArrayList<TimeTableCourse> timeTableCourses = stickers.get(key).getTimeTableCourses();
+            add(timeTableCourses, key);
             if (maxKey < key) maxKey = key;
         }
         stickerCount = maxKey + 1;
@@ -206,9 +204,9 @@ public class TimetableView extends LinearLayout {
         stickers.clear();
     }
 
-    public void edit(int idx, ArrayList<Schedule> schedules) {
+    public void edit(int idx, ArrayList<TimeTableCourse> timeTableCourses) {
         remove(idx);
-        add(schedules, idx);
+        add(timeTableCourses, idx);
     }
 
     public void remove(int idx) {
@@ -221,30 +219,29 @@ public class TimetableView extends LinearLayout {
     }
 
     public void setHeaderHighlight(int idx) {
-        if(idx < 0)return;
+        if (idx < 0) return;
         TableRow row = (TableRow) tableHeader.getChildAt(0);
         View element = row.getChildAt(idx);
-        if(highlightMode == HighlightMode.COLOR) {
-            TextView tx = (TextView)element;
+        if (highlightMode == HighlightMode.COLOR) {
+            TextView tx = (TextView) element;
             tx.setTextColor(Color.parseColor("#FFFFFF"));
             tx.setBackgroundColor(headerHighlightColor);
             tx.setTypeface(null, Typeface.BOLD);
             tx.setTextSize(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_HEADER_HIGHLIGHT_FONT_SIZE_DP);
-        }
-        else if(highlightMode == HighlightMode.IMAGE){
+        } else if (highlightMode == HighlightMode.IMAGE) {
             RelativeLayout outer = new RelativeLayout(context);
             outer.setLayoutParams(createTableRowParam(cellHeight));
             ImageView iv = new ImageView(context);
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(headerHighlightImageSize,headerHighlightImageSize);
-            params.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(headerHighlightImageSize, headerHighlightImageSize);
+            params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
             iv.setLayoutParams(params);
             iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             row.removeViewAt(idx);
             outer.addView(iv);
-            row.addView(outer,idx);
+            row.addView(outer, idx);
 
-            if(headerHighlightImage != null) {
+            if (headerHighlightImage != null) {
                 iv.setImageDrawable(headerHighlightImage);
             }
 
@@ -318,28 +315,28 @@ public class TimetableView extends LinearLayout {
         tableHeader.addView(tableRow);
     }
 
-    private RelativeLayout.LayoutParams createStickerParam(Schedule schedule) {
+    private RelativeLayout.LayoutParams createStickerParam(TimeTableCourse timeTableCourse) {
         int cell_w = calCellWidth();
 
-        RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(cell_w, calStickerHeightPx(schedule));
+        RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(cell_w, calStickerHeightPx(timeTableCourse));
         param.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         param.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        param.setMargins(sideCellWidth + cell_w * schedule.getDay(), calStickerTopPxByTime(schedule.getStartTime()), 0, 0);
+        param.setMargins(sideCellWidth + cell_w * timeTableCourse.getDay(), calStickerTopPxByTime(timeTableCourse.getStartTime()), 0, 0);
 
         return param;
     }
 
-    private int calCellWidth(){
+    private int calCellWidth() {
         Display display = ((Activity) context).getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        int cell_w = (size.x-getPaddingLeft() - getPaddingRight()- sideCellWidth) / (columnCount - 1);
+        int cell_w = (size.x - getPaddingLeft() - getPaddingRight() - sideCellWidth) / (columnCount - 1);
         return cell_w;
     }
 
-    private int calStickerHeightPx(Schedule schedule) {
-        int startTopPx = calStickerTopPxByTime(schedule.getStartTime());
-        int endTopPx = calStickerTopPxByTime(schedule.getEndTime());
+    private int calStickerHeightPx(TimeTableCourse timeTableCourse) {
+        int startTopPx = calStickerTopPxByTime(timeTableCourse.getStartTime());
+        int endTopPx = calStickerTopPxByTime(timeTableCourse.getEndTime());
         int d = endTopPx - startTopPx;
 
         return d;
@@ -387,7 +384,7 @@ public class TimetableView extends LinearLayout {
 
 
     public interface OnStickerSelectedListener {
-        void OnStickerSelected(int idx, ArrayList<Schedule> schedules);
+        void OnStickerSelected(int idx, ArrayList<TimeTableCourse> timeTableCourses);
     }
 
     static class Builder {
